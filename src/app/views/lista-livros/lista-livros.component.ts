@@ -1,7 +1,7 @@
 import { FormControl } from '@angular/forms';
 import { Item } from './../../models/interfaces';
 import { Component } from '@angular/core';
-import { map, switchMap } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs';
 import { BookVolumeInfo } from 'src/app/models/bookVolumeInfo';
 import { LivroService } from 'src/app/services/livro.service';
 
@@ -15,6 +15,7 @@ export class ListaLivrosComponent {
   searchField = new FormControl()
   foundBooks$ = this.searchField.valueChanges
     .pipe(
+      filter((value) => value.length >= 3),
       switchMap((value) => this.service.searchBooksApi(value)),
       map(items => this.booksResponseForBooks(items))
     )
