@@ -1,6 +1,7 @@
-import { Book, Item } from './../../models/interfaces';
-import { Component, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { Item } from './../../models/interfaces';
+import { Component } from '@angular/core';
+import { map, switchMap } from 'rxjs';
 import { BookVolumeInfo } from 'src/app/models/bookVolumeInfo';
 import { LivroService } from 'src/app/services/livro.service';
 
@@ -9,24 +10,16 @@ import { LivroService } from 'src/app/services/livro.service';
   templateUrl: './lista-livros.component.html',
   styleUrls: ['./lista-livros.component.css']
 })
-export class ListaLivrosComponent implements OnDestroy {
+export class ListaLivrosComponent {
 
-  listaLivros: Book[];
-  searchField: string = '';
-  subscription: Subscription;
-  livro: Book;
+  searchField = new FormControl()
+  foundBooks$ = this.searchField.valueChanges
+    .pipe(
+      switchMap((value) => this.service.searchBooksApi(value)),
+      map(items => this.booksResponseForBooks(items))
+    )
 
   constructor(private service: LivroService) { }
-
-  searchBooks() {
-    this.subscription = this.service.searchBooksApi(this.searchField).subscribe({
-      next: (items) => {
-        this.listaLivros = this.booksResponseForBooks(items)
-      },
-      error: error => console.error(error),
-    }
-    );
-  }
 
   booksResponseForBooks(items: Item[]): BookVolumeInfo[] {
     return items.map(item => {
@@ -34,9 +27,6 @@ export class ListaLivrosComponent implements OnDestroy {
     })
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
 }
 
 

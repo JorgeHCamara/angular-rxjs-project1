@@ -3,15 +3,15 @@
   <div class="busca">
     <input
       type="search"
-      [(ngModel)]="searchField"
+      [formControl]="searchField"
     >
-    <button (click)="searchBooks()">
+    <button>
       <img src="assets/imagens/icone-busca.png" alt="Lupa de cor roxa">
     </button>
   </div>
   <p>Busque por assunto, autoria, nome...</p>
-<div class="container-card" *ngIf="listaLivros?.length > 0, else telaInicial">
-  <div *ngFor="let livro of listaLivros">
+<div class="container-card" *ngIf="foundBooks$ | async as bookList, else telaInicial">
+  <div *ngFor="let livro of bookList">
     <app-livro [livro]="livro"></app-livro>
   </div>
 </div>
