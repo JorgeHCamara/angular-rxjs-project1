@@ -1,9 +1,11 @@
 import { FormControl } from '@angular/forms';
 import { Item } from './../../models/interfaces';
 import { Component } from '@angular/core';
-import { filter, map, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs';
 import { BookVolumeInfo } from 'src/app/models/bookVolumeInfo';
 import { LivroService } from 'src/app/services/livro.service';
+
+const DELAY = 300;
 
 @Component({
   selector: 'app-lista-livros',
@@ -15,7 +17,9 @@ export class ListaLivrosComponent {
   searchField = new FormControl()
   foundBooks$ = this.searchField.valueChanges
     .pipe(
+      debounceTime(DELAY),
       filter((value) => value.length >= 3),
+      distinctUntilChanged(),
       switchMap((value) => this.service.searchBooksApi(value)),
       map(items => this.booksResponseForBooks(items))
     )
