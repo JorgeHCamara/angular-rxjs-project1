@@ -12,14 +12,8 @@ export class LivroService {
 
   constructor(private http: HttpClient) { }
 
-  searchBooksApi(value: string): Observable<Item[]> {
+  searchBooksApi(value: string): Observable<BooksResponse> {
     const params = new HttpParams().append('q', value)
-    return this.http.get<BooksResponse>(this.API, {
-      params }).pipe(
-        tap(apiReturn => console.log(apiReturn)),
-        map(resp => resp.items),
-        tap(respTap => console.log('Fluxo após o map', respTap)
-        )
-      )
+    return this.http.get<BooksResponse>(this.API, { params })
   }
 }

@@ -1,7 +1,7 @@
 import { FormControl } from '@angular/forms';
-import { Item } from './../../models/interfaces';
+import { BooksResponse, Item } from './../../models/interfaces';
 import { Component } from '@angular/core';
-import { catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, throwError } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, map, of, switchMap, throwError } from 'rxjs';
 import { BookVolumeInfo } from 'src/app/models/bookVolumeInfo';
 import { LivroService } from 'src/app/services/livro.service';
 
@@ -16,6 +16,20 @@ export class ListaLivrosComponent {
 
   searchField = new FormControl();
   errorMessage = '';
+  booksResponse: BooksResponse;
+
+  // totalBooks$ = this.searchField.valueChanges
+  // .pipe(
+  //   debounceTime(DELAY),
+  //   filter((value) => value.length >= 3),
+  //   distinctUntilChanged(),
+  //   switchMap((value) => this.service.searchBooksApi(value)),
+  //   map(resp => this.booksResponse = resp),
+  //   catchError(error => {
+  //     console.log(error)
+  //     return of()
+  //   })
+  // )
 
   foundBooks$ = this.searchField.valueChanges
     .pipe(
@@ -23,6 +37,8 @@ export class ListaLivrosComponent {
       filter((value) => value.length >= 3),
       distinctUntilChanged(),
       switchMap((value) => this.service.searchBooksApi(value)),
+      map(resp => this.booksResponse = resp),
+      map(resp => resp.items ?? []),
       map(items => this.booksResponseForBooks(items)),
       catchError(error => {
         console.log(error)
